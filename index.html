@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>happy birthday</title>
+    <link href="style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- صفحه ورود نام -->
+    <div id="name-input-screen" class="show">
+        <div class="input-container">
+            <h2><i class="fas fa-cake-candles"></i> اسمتو وارد کن <i class="fas fa-cake-candles"></i></h2>
+            <p class="main-instruction">اسمت رو بنویس همین جا بنویس دورت بگردم من</p>
+            <div class="input-wrapper">
+                <i class="fas fa-user-pen input-icon"></i>
+                <input type="text" id="user-name-input" placeholder="اسمت رو اینجا بنویس..." maxlength="20">
+            </div>
+            <button id="start-celebration-btn">
+                <i class="fas fa-sparkles"></i> شروع جشن... <i class="fas fa-party-horn"></i>
+            </button>
+            <p class="tip"><i class="fas fa-lightbulb"></i> اسمت توی پیام تبریک ظاهر میشه</p>
+        </div>
+    </div>
+
+    <div id="volume-reminder">
+        <h2>بیا جشن بگیریم😍🥳 <i class="fas fa-confetti"></i></h2>
+        <p class="main-instruction"><i class="fas fa-music"></i> حجم صدا رو بالا ببر و کلیک کن تا آهنگ شروع بشه!</p>
+        <p class="sub-instruction"><i class="fas fa-candle-holder"></i> بعد از آهنگ، شمع‌های عدد ۱۶ رو فوت کن!</p>
+        <p class="tip"> <i class="fas fa-hand-point-down"></i>
+            هرجای صفحه کلیک یا لمس کن<br>تا کیک ظاهر بشه و آهنگ پخش بشه!
+        </p>
+    </div>
+    
+    <audio id="happy-birthday-audio" preload="auto">
+        <source src="./happy-birthday.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- صدای cheer / هورا -->
+    <audio id="cheer-audio" preload="auto">
+        <source src="./cheer.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div id="hold-reminder">
+        <h2><i class="fas fa-wand-magic-sparkles"></i> آرزو بکن بچه جون... <i class="fas fa-wand-magic-sparkles"></i></h2>
+        <p class="main-instruction"><i class="fas fa-fire-flame-curved"></i> حالا وقتشه شمع‌ هارو فوت کنی جیگرربابا🤭💋💗</p>
+        <p class="sub-instruction"><i class="fas fa-seedling"></i>آروزی تولدت رو بکن و بگو از خدا که چی میخوای خوشگلم😍❤</p>
+        <p class="tip"><i class="fas fa-microphone"></i> فوت کن داخل میکروفون یا انگشتت رو روی صفحه نگه دار</p>
+    </div>
+    
+    <!-- تایمر معکوس -->
+    <div class="song-countdown" id="song-countdown">
+        <div class="countdown-number" id="countdown-number">۳۸</div>
+        <div class="countdown-label" id="countdown-label">
+            <span>زمان آهنگ</span>
+            <small>ثانیه باقی‌ مانده</small>
+        </div>
+    </div>
+    
+    <div id="congratulation-overlay">
+        <div id="congratulation-text">
+            <h3><i class="fas fa-gift"></i> تولدتتتتتتت کلی مبارککککککک عروشککک بابااا <i class="fas fa-gift"></i></h3>
+            <h4 id="personalized-name"></h4>
+            <p class="wish-text">امیدوارم به تموم آرزوهات برسیی دلبرمم و 130 سال عمرکنیی کنار بابایی فداتشمم من🥳😁🤍</p>
+        </div>
+    </div>
+
+    <!-- کانواس کنفتی -->
+    <canvas id="confetti-canvas"></canvas>
+    
+    <script>
+        // Store user name globally
+        let userName = "";
+        
+        // Name input functionality
+        const nameInputScreen = document.getElementById('name-input-screen');
+        const userNameInput = document.getElementById('user-name-input');
+        const startCelebrationBtn = document.getElementById('start-celebration-btn');
+        const volumeReminder = document.getElementById('volume-reminder');
+        const audio = document.getElementById('happy-birthday-audio');
+        const cheerAudio = document.getElementById('cheer-audio');
+        const personalizedNameElement = document.getElementById('personalized-name');
+        
+        // متغیرهای تایمر معکوس
+        const songCountdown = document.getElementById('song-countdown');
+        const countdownNumber = document.getElementById('countdown-number');
+        const countdownLabel = document.getElementById('countdown-label');
+        let songCountdownValue = 38;
+        let songCountdownInterval;
+        
+        // تابع شروع تایمر معکوس
+        function startSongCountdown() {
+            songCountdownValue = 38;
+            countdownNumber.textContent = songCountdownValue;
+            countdownLabel.innerHTML = `<span>زمان آهنگ</span><small>ثانیه باقی‌ مانده</small>`;
+            songCountdown.style.display = 'flex';
+            
+            songCountdownInterval = setInterval(() => {
+                songCountdownValue--;
+                countdownNumber.textContent = songCountdownValue;
+                
+                if (songCountdownValue <= 0) {
+                    clearInterval(songCountdownInterval);
+                    countdownNumber.textContent = '★';
+                    countdownLabel.innerHTML = `
+                        <span style="font-size: 1.1em; font-weight: bold;">منتظر باش...</span>
+                        <small>آماده‌سازی</small>
+                    `;
+                }
+            }, 1000);
+        }
+        
+        // Start celebration when button is clicked
+        startCelebrationBtn.addEventListener("click", function () {
+            userName = userNameInput.value.trim();
+            
+            if (!userName) {
+                userName = "رفیق";
+            }
+            
+            localStorage.setItem('birthdayUserName', userName);
+            
+            if (personalizedNameElement) {
+                personalizedNameElement.innerHTML = `<i class="fas fa-birthday-cake"></i> ${userName}! <i class="fas fa-balloon"></i>`;
+            }
+            
+            nameInputScreen.classList.remove('show');
+            setTimeout(function () {
+                nameInputScreen.style.display = 'none';
+            }, 1000);
+            
+            volumeReminder.style.display = 'flex';
+            setTimeout(function () {
+                volumeReminder.classList.add('show');
+            }, 50);
+        });
+        
+        // Allow pressing Enter to start
+        userNameInput.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                startCelebrationBtn.click();
+            }
+        });
+        
+        window.addEventListener('load', function () {
+            const storedName = localStorage.getItem('birthdayUserName');
+            if (storedName && personalizedNameElement) {
+                personalizedNameElement.innerHTML = `<i class="fas fa-birthday-cake"></i> ${storedName}! <i class="fas fa-balloon"></i>`;
+                userName = storedName;
+            }
+        });
+        
+        // Original volume reminder functionality
+        volumeReminder.addEventListener("click", function () {
+            audio.play();
+            volumeReminder.classList.remove('show');
+            setTimeout(function () {
+                volumeReminder.style.display = 'none';
+            }, 1000);
+            
+            startSongCountdown();
+            // کنفتی فقط بعد از خاموش شدن شمع‌ها فعال می‌شود (در script.js)
+        });
+        
+        window.addEventListener('beforeunload', function() {
+            if (songCountdownInterval) clearInterval(songCountdownInterval);
+        });
+
+        // تشخیص نمایش hold-reminder
+        const holdReminder = document.getElementById('hold-reminder');
+        const observer = new MutationObserver(() => {
+            if (holdReminder.style.display === 'flex' || holdReminder.style.display === 'block' || 
+                window.getComputedStyle(holdReminder).display !== 'none') {
+                
+                songCountdown.style.display = 'flex';
+                countdownNumber.textContent = '🎤';
+                countdownLabel.innerHTML = `
+                    <span style="font-size: 1.3em; font-weight: bold; letter-spacing: 1px;">فوت کن!</span>
+                    <small>داخل میکروفون</small>
+                `;
+            }
+        });
+
+        observer.observe(holdReminder, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+
+        // ================== افکت کنفتی و قلب (فقط بعد از خاموش شدن) ==================
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const ctx = confettiCanvas.getContext('2d');
+        let confettiParticles = [];
+        let confettiAnimation;
+        let confettiStarted = false;
+
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        });
+
+        function createConfetti() {
+            const colors = ['#ff69b4', '#ffd700', '#87ceeb', '#da70d6', '#ff6b6b', '#98fb98', '#ffa500', '#ff1493'];
+            const shapes = ['rect', 'circle', 'heart'];
+            return {
+                x: Math.random() * confettiCanvas.width,
+                y: -20,
+                size: Math.random() * 12 + 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speedY: Math.random() * 3 + 2,
+                speedX: (Math.random() - 0.5) * 4,
+                rotation: Math.random() * 360,
+                rotationSpeed: (Math.random() - 0.5) * 10,
+                shape: shapes[Math.floor(Math.random() * shapes.length)],
+                opacity: 1
+            };
+        }
+
+        function drawHeart(ctx, x, y, size, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            const s = size / 15;
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-s * 5, -s * 5, -s * 10, s * 2, 0, s * 8);
+            ctx.bezierCurveTo(s * 10, s * 2, s * 5, -s * 5, 0, 0);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function startConfetti() {
+            if (confettiStarted) return;
+            confettiStarted = true;
+            cancelAnimationFrame(confettiAnimation);
+            confettiParticles = [];
+            
+            function animate() {
+                ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                
+                // اضافه کردن ذرات جدید
+                if (confettiParticles.length < 150) {
+                    for (let i = 0; i < 3; i++) {
+                        confettiParticles.push(createConfetti());
+                    }
+                }
+                
+                confettiParticles.forEach((p, i) => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.rotation += p.rotationSpeed;
+                    p.opacity = Math.max(0, 1 - (p.y / confettiCanvas.height));
+                    
+                    if (p.y > confettiCanvas.height || p.opacity <= 0) {
+                        confettiParticles.splice(i, 1);
+                        return;
+                    }
+                    
+                    ctx.save();
+                    ctx.globalAlpha = p.opacity;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    
+                    if (p.shape === 'heart') {
+                        drawHeart(ctx, 0, 0, p.size, p.color);
+                    } else if (p.shape === 'circle') {
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    }
+                    ctx.restore();
+                });
+                
+                confettiAnimation = requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // تابع عمومی برای فراخوانی از script.js
+        window.startCelebrationEffects = function() {
+            startConfetti();
+            // پخش صدای cheer
+            if (cheerAudio) {
+                cheerAudio.volume = 0.7;
+                cheerAudio.play().catch(e => console.log('Cheer sound not available - add cheer.mp3'));
+            }
+        };
+    </script>
+    <script type="module" src="./script.js"></script>
+</body>
+</html>
